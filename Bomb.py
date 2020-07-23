@@ -1,3 +1,4 @@
+import time
 import datetime
 import smtplib
 import imaplib
@@ -99,25 +100,27 @@ def Unseen():
     unseen_list=unseen[1][0].split()
     return conn,unseen_list
 if __name__ == '__main__':
-    smtp_server = 'smtp.qq.com'
-    from_addr='572470467@qq.com'
-    password='ckffrhvgadghbcgf'
-    server=poplib.POP3_SSL('pop.qq.com')
-    server.user(from_addr)
-    server.pass_(password)
-    resp, mails, octets = server.list()
-    conn,index=Unseen()
-    for i in range(len(index)):
-        resp, lines, octets = server.retr(index[i].decode('utf-8'))
-        msg_content = b'\r\n'.join(lines).decode('utf-8','ignore')
-        msg = Parser().parsestr(msg_content)
-        subject=msg['Subject']
-        print('Subject'+':'+subject)
-        date=msg["Date"]
-        to_addr=get_header(msg)
-        FileName=get_file(msg)
-        Send()
-    for num in index:
-        typ,y=conn.fetch(num,'(BODY.PEEK[])')
-        conn.store(num,'+FLAGS','\Seen')    
-    server.quit()
+    while True:
+        time.sleep(0.5)
+        smtp_server = 'smtp.qq.com'
+        from_addr='572470467@qq.com'
+        password='ckffrhvgadghbcgf'
+        server=poplib.POP3_SSL('pop.qq.com')
+        server.user(from_addr)
+        server.pass_(password)
+        resp, mails, octets = server.list()
+        conn,index=Unseen()
+        for i in range(len(index)):
+            resp, lines, octets = server.retr(index[i].decode('utf-8'))
+            msg_content = b'\r\n'.join(lines).decode('utf-8','ignore')
+            msg = Parser().parsestr(msg_content)
+            subject=msg['Subject']
+            print('Subject'+':'+subject)
+            date=msg["Date"]
+            to_addr=get_header(msg)
+            FileName=get_file(msg)
+            Send()
+        for num in index:
+            typ,y=conn.fetch(num,'(BODY.PEEK[])')
+            conn.store(num,'+FLAGS','\Seen')    
+        server.quit()
